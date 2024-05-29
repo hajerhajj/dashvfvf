@@ -1,0 +1,123 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css" />
+  <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-bold-rounded/css/uicons-bold-rounded.css'>
+  <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-brands/css/uicons-brands.css'>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
+</head>
+
+<body id="body-pd" class="body1">
+
+  <div class="l-navbar" id="navbar">
+    <nav class="nav">
+        <div>
+          <div class="nav__brand">
+            <a href="#" class="nav__logo">
+                <img src="{% static 'img/logo.png' %}" alt="Votre Logo" class="logo" id="nav-toggle">
+                <span class="nav__text">Dash d'Or</span>
+
+            </a>
+          </div>
+            <div class="nav__list">
+                <a href="#" class="nav__link active">
+                    <ion-icon name="home-outline" class="nav__icon"></ion-icon>
+                    <span class="nav__name">Dashboard</span>
+                </a>
+                <a href="#" class="nav__link">
+                    <ion-icon name="chatbubbles-outline" class="nav__icon"></ion-icon>
+                    <span class="nav__name">Messenger</span>
+                </a>
+
+                <div  class="nav__link collapse">
+                    <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
+                    <span class="nav__name">Projects</span>
+
+                    <ion-icon name="chevron-down-outline" class="collapse__link"></ion-icon>
+
+                    <ul class="collapse__menu">
+                        <a href="#" class="collapse__sublink">Data</a>
+                        <a href="#" class="collapse__sublink">Group</a>
+                        <a href="#" class="collapse__sublink">Members</a>
+                    </ul>
+                </div>
+
+                <a href="#" class="nav__link">
+                    <ion-icon name="pie-chart-outline" class="nav__icon"></ion-icon>
+                    <span class="nav__name">Analytics</span>
+                </a>
+                <div class="nav__link collapse">
+                    <ion-icon name="people-outline" class="nav__icon"></ion-icon>
+                    <span class="nav__name">Team</span>
+
+                    <ion-icon name="chevron-down-outline" class="collapse__link"></ion-icon>
+
+                    <ul class="collapse__menu">
+                        <a href="#" class="collapse__sublink">Data</a>
+                        <a href="#" class="collapse__sublink">Group</a>
+                        <a href="#" class="collapse__sublink">Members</a>
+                    </ul>
+                </div>
+                <a href="#" class="nav__link">
+                    <ion-icon name="settings-outline" class="nav__icon"></ion-icon>
+                    <span class="nav__name">Settings</span>
+                </a>
+            </div>
+        </div>
+
+        <a href="#" class="nav__link">
+            <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
+            <span class="nav__name">Log Out</span>
+        </a>
+    </nav>
+</div>
+
+  <section class="home-section">
+    <div class="home-content">
+      <button class="custom-button">MME</button>
+      <button class="custom-button">EPG</button>
+      <button class="custom-button">TMS/Peakflow</button>
+      <button class="custom-button">DNS</button>
+      <button class="custom-button">Firewall</button>
+      <button class="custom-button">PCRF</button>
+      <button class="custom-button">Les caches</button>
+      <button class="custom-button">F5</button>
+      <button class="custom-button">BNG</button>
+      <button class="custom-button">6Cure</button>   
+    </div>
+
+    <div class="container" style="margin-top: 25px;">
+      <section class="table-section">
+        <p>tableau</p>
+      </section>
+    </div>
+
+    <div style="margin-top: 25px;" class="charts-container">
+      <section class="charts-section" style="margin-left: 25px; margin-right: 10px;">
+        <canvas id="myChart"></canvas>
+      </section>
+      <section class="charts-section" style="margin-right: 10px;">
+        <canvas id="myline"  width="600" height="300"></canvas>
+      </section>
+      <section class="charts-section">
+        <canvas id="myRadarChart" width="300"></canvas>
+      </section>
+    </div>
+    
+
+  </section>
+  
+
+  <script src="{% static 'js/script.js' %}"></script>
+</body>
+
+</html>
