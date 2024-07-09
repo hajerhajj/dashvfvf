@@ -18,8 +18,16 @@ from django.urls import path
 from DashApp import views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views.SignupPage,name='signup'),
-    path('login/',views.LoginPage,name='login'),
+    path('signup/',views.SignupPage,name='signup'),
+    path('',views.LoginPage,name='login'),
     path('index/',views.HomePage,name='index'),
     path('logout/',views.LogoutPage,name='logout'),  
+    path('lire-fichierso/', views.readfileso, name='readfileso'),
+    path('lire-fichiertn1/', views.readfiletn1, name='readfiletn1'),
+    path('lire-fichiertn2/', views.readfiletn2, name='readfiletn2'),
+    path('lire-fichierint/', views.readfileint, name='readfileint'),
+    
+    path('update_table/', views.HomePage, name='update_table'),
+    
+
 ]

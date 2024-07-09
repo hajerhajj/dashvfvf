@@ -1,0 +1,290 @@
+<section id="globalContainer" class="home-section mme-section">
+    <div id="global" class="container" >
+      <div id="tn1global_table" class="table-section" style="display: none;">
+        
+      <table class="table table-bordered table-striped" border="1">
+          <thead>
+          <tr>
+              <th>Date</th>
+              <th>PDP Act 2G 3G</th>
+              <th>SAU 4G</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for item in tn1_data %}
+          <tr>
+              <td>{{ item.date }}</td>
+              <td>{{ item.pdpact2g3g }}</td>
+              <td>{{ item.sau4g }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+      </div>
+
+      <div id="tn2global_table" class="table-section" style="display: none;">
+      <table class="table table-bordered table-striped" border="1">
+          <thead>
+          <tr>
+              <th>Date</th>
+              <th>PDP Act 2G 3G</th>
+              <th>SAU 4G</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for item in tn2_data %}
+          <tr>
+              <td>{{ item.date }}</td>
+              <td>{{ item.pdpact2g3g }}</td>
+              <td>{{ item.sau4g }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+      </div>
+
+      <div id="sousseglobal_table" class="table-section" style="display: none;">
+      <table class="table table-bordered table-striped" border="1">
+          <thead>
+          <tr>
+              <th>Date</th>
+              <th>PDP Act 2G 3G</th>
+              <th>SAU 4G</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for item in sousse_data %}
+          <tr>
+              <td>{{ item.date }}</td>
+              <td>{{ item.pdpact2g3g }}</td>
+              <td>{{ item.sau4g }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+      </div>
+
+      <div id="allglobal_table" class="table-section" style="display: none;">
+        <table class="table table-bordered table-striped" border="1">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th title="PDP (2G/3G) Context Activation Success Rate">PDP ACT SR</th>
+                    <th title="LTE SAU Load">SAU 4G Number</th>
+                </tr>
+            </thead>
+            <tbody id="allglobal_table_body">
+            </tbody>
+        </table>
+    </div>
+
+      
+  </div>
+
+      
+    
+  </section>
+  <script>
+   
+    $(document).ready(function() {
+      $('.table-section').hide();
+      $('#tn1global_table').show(); 
+      $('#globalBtn').click(function(e) {
+        e.preventDefault();
+        $('.table-section').hide(); // Hide all table sections
+        $('#tn1global_table').show(); // Show only the tn1_table
+      });
+    
+      flatpickr("#dateRangePicker", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+      });
+    
+      $('#goBtn').click(function(e) {
+        e.preventDefault();
+        var selectedOption = $('.custom-select').val();
+        var dateRange = $('#dateRangePicker').val().split(' to ');
+    
+        if (dateRange.length !== 2) {
+          alert("Veuillez sélectionner une plage de dates valide.");
+          return;
+        }
+    
+        var startDate = new Date(dateRange[0].replace(/\./g, '-'));
+        var endDate = new Date(dateRange[1].replace(/\./g, '-'));
+    
+        console.log('Date de début sélectionnée:', startDate.toISOString().split('T')[0]);
+        console.log('Date de fin sélectionnée:', endDate.toISOString().split('T')[0]);
+    
+        if (selectedOption === 'Allglobal') {
+         var pdpactsrAvg = (calculateMaxMoy('#tn1_table', 4, startDate, endDate) + 
+                            calculateMaxMoy('#tn2_table', 4, startDate, endDate) + 
+                            calculateMaxMoy('#sousse_table', 4, startDate, endDate))/3; 
+          var sau4gAvg = calculateSumByDay(startDate, endDate, 7);
+          
+    
+          $('#allglobal_table_body').html(`
+            <tr>
+              <td>${startDate.toISOString().split('T')[0]} - ${endDate.toISOString().split('T')[0]}</td>
+              <td>${pdpactsrAvg.toFixed(2)}</td>
+              <td>${sau4gAvg}</td>
+            </tr>
+          `);
+    
+          $('#allglobal_table').show();
+
+        } else {
+          // Filtrer et afficher les lignes des tables selon la période sélectionnée
+          $('.table-section tbody tr').each(function() {
+            var dateText = $(this).find('td:first-child').text().trim();
+            var formattedDateText = dateText.replace(/\./g, '-');
+            var rowDate = new Date(formattedDateText);
+            var rowDateString = rowDate.toISOString().split('T')[0];
+    
+            if (rowDate >= startDate && rowDate <= endDate) {
+              $(this).show();
+            } else {
+              $(this).hide();
+            }
+          });
+    
+          $('.table-section').hide();
+          $('#' + selectedOption.toLowerCase() + '_table').show();
+
+        }
+
+
+      });
+    
+      function calculateMaxMoy(tableId, columnName, startDate, endDate) {
+        let max = -Infinity;
+        $(tableId + ' tbody tr').each(function() {
+          var dateText = $(this).find('td:first-child').text().trim();
+          var formattedDateText = dateText.replace(/\./g, '-');
+          var rowDate = new Date(formattedDateText);
+    
+          // Filtrer par date
+          if (rowDate >= startDate && rowDate <= endDate) {
+            let value = parseFloat($(this).find('td:nth-child(' + columnName + ')').text());
+            if (!isNaN(value)) {
+              max = Math.max(max, value);
+            }
+          }
+        });
+        return max;
+      }
+    
+      function calculateSumByDay(startDate, endDate, columnNumber) {
+        var sums = {};
+    
+        // Table #tn1_table
+        $('#tn1_table tbody tr').each(function() {
+          var dateText = $(this).find('td:first-child').text().trim();
+          var formattedDateText = dateText.replace(/\./g, '-');
+          var rowDate = new Date(formattedDateText);
+    
+          if (rowDate >= startDate && rowDate <= endDate) {
+            var value = parseFloat($(this).find('td:nth-child(' + columnNumber + ')').text().replace(',', '.'));
+            if (!isNaN(value)) {
+              var dateKey = rowDate.toISOString().split('T')[0];
+              sums[dateKey] = (sums[dateKey] || 0) + value;
+            }
+          }
+        });
+    
+        // Table #tn2_table
+        $('#tn2_table tbody tr').each(function() {
+          var dateText = $(this).find('td:first-child').text().trim();
+          var formattedDateText = dateText.replace(/\./g, '-');
+          var rowDate = new Date(formattedDateText);
+    
+          if (rowDate >= startDate && rowDate <= endDate) {
+            var value = parseFloat($(this).find('td:nth-child(' + columnNumber + ')').text().replace(',', '.'));
+            if (!isNaN(value)) {
+              var dateKey = rowDate.toISOString().split('T')[0];
+              sums[dateKey] = (sums[dateKey] || 0) + value;
+            }
+          }
+        });
+    
+        // Table #sousse_table
+        $('#sousse_table tbody tr').each(function() {
+          var dateText = $(this).find('td:first-child').text().trim();
+          var formattedDateText = dateText.replace(/\./g, '-');
+          var rowDate = new Date(formattedDateText);
+    
+          if (rowDate >= startDate && rowDate <= endDate) {
+            var value = parseFloat($(this).find('td:nth-child(' + columnNumber + ')').text().replace(',', '.'));
+            if (!isNaN(value)) {
+              var dateKey = rowDate.toISOString().split('T')[0];
+              sums[dateKey] = (sums[dateKey] || 0) + value;
+            }
+          }
+        });
+    
+        // Trouver le maximum des sommes
+        var maxSum = -Infinity;
+        var maxDate = null;
+    
+        Object.keys(sums).forEach(function(date) {
+          if (sums[date] > maxSum) {
+            maxSum = sums[date];
+            maxDate = date;
+          }
+        });
+    
+        return maxSum;
+      }
+    
+  
+  // Exemple de configuration de graphique avec Chart.js
+  var months = [];  // Tableau pour stocker les noms des mois
+var currentDate = new Date();  // Date actuelle
+var currentMonth = currentDate.getMonth();  // Mois actuel (0-11)
+var currentYear = currentDate.getFullYear();  // Année actuelle
+
+// Remplissage des labels pour les 6 derniers mois
+for (var i = 5; i >= 0; i--) {
+  var pastMonth = new Date(currentYear, currentMonth - i, 1);  // Mois passé
+  months.push(pastMonth.toLocaleString('default', { month: 'long' }));
+}
+
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+      labels: months,
+      datasets: [{
+          label: '',
+          data: [12, 19, 3, 5, 2, 3], 
+          backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)'
+          ],
+          borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+      }]
+  },
+  options: {
+      scales: {
+          y: {
+              beginAtZero: true
+          }
+      }
+  }
+});
+});
+</script>
+
+

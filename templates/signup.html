@@ -9,10 +9,16 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <form method="post" style="height: 600px; width: 400px;top: 50%; left: 50%;">
+    <form method="post" style="height: 650px; width: 400px;top: 50%; left: 50%;">
         {% csrf_token %}
         <div class="form-half">
             <h3 class="orange-text">Sign Up Here</h3>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
 
             <label for="username" class="orange-text">Username</label>
             <input type="text" placeholder="Username" name="username" id="username">

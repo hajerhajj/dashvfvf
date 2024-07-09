@@ -8,49 +8,85 @@
     }
 
  
-
     .home-section {
-      position: relative;
       background: #151518;
-      height: 100vh;
-      left: var(--nav-width); 
-      width: calc(100% - var(--nav-width)); 
+      width: calc(100% - 80px); /* Ajustez la largeur en fonction de votre mise en page */
       transition: all 0.5s ease;
       padding: 12px;
       display: flex;
       flex-direction: column;
+      margin-left: 80px; 
     }
     
-
-
     .home-content {
-      margin-left: 25px;
+      margin-left: 25px; 
       display: flex;
       align-items: center;
+      gap: 10px; 
+      overflow-x: auto; 
       flex-wrap: wrap;
     }
-
+    
     .home-section .home-content .bx-menu {
-
       color: #5a5a62;
       transform-origin: center;
-    }
-
-
-
-    .home-section .home-content .text {
-      color: #ff6039;
-      font-size: 35px;
-    }
-
-    .home-section .home-content .bx-menu {
       cursor: pointer;
       margin-right: 10px;
+      
     }
-
+    
     .home-section .home-content .text {
+      color: #ff6039;
       font-size: 26px;
       font-weight: 600;
+    }
+
+    
+    
+    .custom-button {
+      background-color: #333;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    .custom-button.active {
+      background-color: orange;
+      color: white;
+  }
+    
+    .custom-input {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      background-color: #333;
+      color: white;
+      width: 210px;
+      flex-shrink: 0;
+      margin-top: 10px;
+      height: 35px;
+      margin-right: 10px;
+    }
+    
+    .containerheader {
+      display: flex;
+      align-items: flex-start; 
+      margin-left: auto;
+      margin-top: 10px;
+    }
+    
+    .custom-select {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      background-color: #333;
+      color: white;
+      width: 110px;
+      flex-shrink: 0;
+      margin-top: 10px;
+      margin-right: 10px; 
     }
     
     .nav__logo {
@@ -106,7 +142,7 @@
 
     form * {
         font-family: 'Roboto', sans-serif;
-        color: #F4661B;
+        color: #ff8c00;
         letter-spacing: 0.5px;
         outline: none;
         border: none;
@@ -167,7 +203,7 @@
     .centered-link a {
         text-decoration: none;
         font-size: 14px;
-        color: #ff8c00;
+        color: #f19203;
         font-weight: bold;
     }
 
@@ -213,18 +249,12 @@
       font-size: 14px;
       cursor: pointer;
       transition: background-color 0.3s, border-color 0.3s; 
-      margin-right: 10px;
       width: auto;
     }
     
-    .custom-button:hover {
+    .custom-button.active {
       background-color: #ff8c00;
-      border-color: #ff6f00; 
-    }
-    
-    .custom-button.clicked {
-      background-color: #ff8c00; 
-      border-color: #ff6f00; 
+      color: white; 
     }
 
     .charts-container {
@@ -233,18 +263,27 @@
     }
     
     .charts-section {
-      flex: 1; 
-      padding: 20px;
-      background-color: rgba(255, 255, 255, 0.13);
-      border-radius: 10px;
-      backdrop-filter: blur(10px);
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+        flex: 1; /* Chaque section de graphique prend tout l'espace disponible */
+        padding: 20px; /* Remplissage intérieur pour espacer les graphiques du bord du conteneur */
+        background-color: rgba(255, 255, 255, 0.13); /* Couleur de fond semi-transparente */
+        border-radius: 10px; /* Coins arrondis */
+        backdrop-filter: blur(10px); /* Flou de l'arrière-plan pour un effet de transparence */
+        border: 2px solid rgba(255, 255, 255, 0.1); /* Bordure légère */
+        box-shadow: 0 0 40px rgba(8, 7, 16, 0.6); /* Ombre pour un effet de profondeur */
+        display: flex; /* Utilisation de flexbox pour les graphiques */
+        flex-direction: column; /* Alignement des graphiques en colonne */
+        align-items: center;
     }
 
+    .charts-section canvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+  }
     .container {
       display: flex;
       justify-content: center;
+      margin-top: 25px;
     }
     
     .table-section {
@@ -255,8 +294,25 @@
       backdrop-filter: blur(10px);
       border: 2px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+      width: 100%;
+      overflow-x: auto;
       margin-left: 25px;
     }
+    
+    .table-section table {
+      margin: auto; /* Centrer horizontalement */
+      width: 100%; /* Pour s'assurer que le tableau ne dépasse pas la largeur de table-section */
+    }
+    
+    .table-section table th,
+    .table-section table td {
+      text-align: center;
+      vertical-align: middle;
+      width: 10%; /* Ajuster la largeur des colonnes si nécessaire */
+      height: 50px;
+    }
+    
+    
 
     /* sidebar */
 
@@ -394,25 +450,37 @@ a{
   display: none;
   padding: .75rem 2.25rem;
 }
-.collapse__sublink{
+.collapse__sublink {
   color: var(--sub-color);
-  font-size: var(--small-font-size);
+  font-size: 12px;
+  font: bold;
+  display: inline-block; 
+  white-space: nowrap; 
 }
 .collapse__sublink:hover{
   color: var(--white-color);
 }
 
-/*Show collapse*/
 .showCollapse{
   display: block;
 }
 
-/*Rotate icon*/
 .rotate{
   transform: rotate(180deg);
 }
-    
 
-   
-    
-    
+.alert {
+            color: red;
+}
+
+.vertical-line{
+  border-left: 2px solid #fff;
+  display: inline-block;
+  height: 30px;
+  margin: 10 15px;
+  margin-top: 10px;
+}
+
+.btn i.fas {
+  color: white; 
+}

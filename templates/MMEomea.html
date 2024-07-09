@@ -1,0 +1,354 @@
+{% load static %}
+    <section id="mmeContainer" class="home-section mme-section">
+      <div id="mme" class="container" >
+        <div id="tn1_table" class="table-section" style="display: none;">
+        <table class="table table-bordered table-striped" border="1">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Attach SR 2G 3G</th>
+                <th>Attach SR 4G</th>
+                <th>PDP Act 2G 3G</th>
+                <th>Attach SR 3G</th>
+                <th>SAU 2G 3G</th>
+                <th>SAU 4G</th>
+                <th>PDP 2G 3G</th>
+                <th>Bearer</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in tn1_data %}
+            <tr>
+                <td>{{ item.date }}</td>
+                <td>{{ item.attach2g3g }}</td>
+                <td>{{ item.attach4g }}</td>
+                <td>{{ item.pdpact2g3g }}</td>
+                <td>{{ item.attach3g }}</td>
+                <td>{{ item.sau2g3g }}</td>
+                <td>{{ item.sau4g }}</td>
+                <td>{{ item.pdp }}</td>
+                <td>{{ item.bearer }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+
+        <div id="tn2_table" class="table-section" style="display: none;">
+        <table class="table table-bordered table-striped" border="1">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Attach SR 2G 3G</th>
+                <th>Attach SR 4G</th>
+                <th>PDP Act 2G 3G</th>
+                <th>Attach SR 3G</th>
+                <th>SAU 2G 3G</th>
+                <th>SAU 4G</th>
+                <th>PDP 2G 3G</th>
+                <th>Bearer</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in tn2_data %}
+            <tr>
+                <td>{{ item.date }}</td>
+                <td>{{ item.attach2g3g }}</td>
+                <td>{{ item.attach4g }}</td>
+                <td>{{ item.pdpact2g3g }}</td>
+                <td>{{ item.attach3g }}</td>
+                <td>{{ item.sau2g3g }}</td>
+                <td>{{ item.sau4g }}</td>
+                <td>{{ item.pdp }}</td>
+                <td>{{ item.bearer }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+
+        <div id="sousse_table" class="table-section" style="display: none;">
+        <table class="table table-bordered table-striped" border="1">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Attach SR 2G 3G</th>
+                <th>Attach SR 4G</th>
+                <th>PDP Act 2G 3G</th>
+                <th>Attach SR 3G</th>
+                <th>SAU 2G 3G</th>
+                <th>SAU 4G</th>
+                <th>PDP 2G 3G</th>
+                <th>Bearer</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in sousse_data %}
+            <tr>
+                <td>{{ item.date }}</td>
+                <td>{{ item.attach2g3g }}</td>
+                <td>{{ item.attach4g }}</td>
+                <td>{{ item.pdpact2g3g }}</td>
+                <td>{{ item.attach3g }}</td>
+                <td>{{ item.sau2g3g }}</td>
+                <td>{{ item.sau4g }}</td>
+                <td>{{ item.pdp }}</td>
+                <td>{{ item.bearer }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+
+        <div id="all_table" class="table-section" style="display: none;">
+          <button id="downloadCsvBtnomea" class="custom-button containerheader">
+            <i class="fas fa-download"></i>&nbsp; Download report
+          </button>          
+          <br> <br>
+
+          <table class="table table-bordered table-striped" border="1">
+              <thead>
+                  <tr>
+                      <th>Date</th>
+                      <th title="GPRS (2G/3G) Attached Success rate (%)">Attach SR 2G 3G</th>
+                      <th title="4G Attach Success Ratio">Attach SR 4G</th>
+                      <th title="PDP (2G/3G) Context Activation Success Rate (%)">PDP ACT SR</th>
+                      <th title="% Core Packet Switched Network SAU load">% SAU 2G 3G</th>
+                      <th title="% Core Packet Switched Network PDP context load">% PDP Number</th>
+                      <th title="LTE SAU Load (%)">% SAU 4G</th>
+                      <th title="Max Core Packet-Switched Network SAU Load (in nbr of subs)">Max Attached Sub 2G/3G</th>
+                      <th title="Max Core Packet-Switched Network PDP Load (in nbr of active sessions)">Max PDP Number</th>
+                      <th title="Dedicated Bearer Activation Success Ratio">Bearer</th>
+                  </tr>
+              </thead>
+              <tbody id="all_table_body">
+              </tbody>
+          </table>
+      </div>
+
+        
+    </div>
+    <!--
+        <div style="margin-top: 25px;" class="charts-container">
+          <section class="charts-section" style="margin-left: 25px; margin-right: 10px;">
+          <canvas id="myChart" width="800" height="400"></canvas>
+          </section>
+          
+      </div>
+      -->
+    </section>
+    
+    <script>
+      $(document).ready(function() {
+    
+        $('.table-section').hide();
+        $('#tn1_table').show(); 
+        $('#mmeBtn').click(function(e) {
+          e.preventDefault();
+          $('.table-section').hide(); 
+          $('#tn1_table').show();
+        });
+    
+        flatpickr("#dateRangePicker", {
+          mode: "range",
+          dateFormat: "Y-m-d",
+        });
+    
+        $('#goBtn').click(function(e) {
+          e.preventDefault();
+          var selectedOption = $('.custom-select').val();
+          var dateRange = $('#dateRangePicker').val().split(' to ');
+    
+          if (dateRange.length !== 2) {
+            alert("Veuillez sélectionner une plage de dates valide.");
+            return;
+          }
+    
+          var startDate = new Date(dateRange[0].replace(/\./g, '-'));
+          var endDate = new Date(dateRange[1].replace(/\./g, '-'));
+    
+          console.log('Date de début sélectionnée:', startDate.toISOString().split('T')[0]);
+          console.log('Date de fin sélectionnée:', endDate.toISOString().split('T')[0]);
+    
+          if (selectedOption === 'All') {
+            var attachSr2g3gAvg = (calculateMaxMoy('#tn1_table', 2, startDate, endDate) + 
+                                   calculateMaxMoy('#tn2_table', 2, startDate, endDate) + 
+                                   calculateMaxMoy('#sousse_table', 2, startDate, endDate)) / 3;
+    
+            var attachSr4gAvg = (calculateMaxMoy('#tn1_table', 3, startDate, endDate) + 
+                                 calculateMaxMoy('#tn2_table', 3, startDate, endDate) + 
+                                 calculateMaxMoy('#sousse_table', 3, startDate, endDate)) / 3;
+    
+            var pdpactsrAvg = (calculateMaxMoy('#tn1_table', 4, startDate, endDate) + 
+                              calculateMaxMoy('#tn2_table', 4, startDate, endDate) + 
+                              calculateMaxMoy('#sousse_table', 4, startDate, endDate))/3;
+            var sau2g3gpercent = calculateSumByDay(startDate, endDate, 6)/(44000);  
+            var pdpnbrperent = calculateSumByDay(startDate, endDate, 8)/(44000);                
+            var sau2g3gAvg = calculateSumByDay(startDate, endDate, 6);
+            var pdpnbrAvg = calculateSumByDay(startDate, endDate, 8);  
+            var sau4gAvg = calculateSumByDay(startDate, endDate, 7)/44000;
+            var bearerAvg = (calculateMaxMoy('#tn1_table', 9, startDate, endDate) + 
+                            calculateMaxMoy('#tn2_table', 9, startDate, endDate) + 
+                            calculateMaxMoy('#sousse_table', 9, startDate, endDate))/35000;
+    
+    
+            $('#all_table_body').html(`
+              <tr>
+                <td>${startDate.toISOString().split('T')[0]} - ${endDate.toISOString().split('T')[0]}</td>
+                <td>${attachSr2g3gAvg.toFixed(2)}</td>
+                <td>${attachSr4gAvg.toFixed(2)}</td>
+                <td>${pdpactsrAvg.toFixed(2)}</td>
+                <td>${sau2g3gpercent.toFixed(2)}</td>
+                <td>${pdpnbrperent.toFixed(2)}</td>
+                <td>${sau4gAvg.toFixed(2)}</td>
+                <td>${sau2g3gAvg}</td>
+                <td>${pdpnbrAvg}</td>
+                <td>${bearerAvg.toFixed(2)}</td>
+              </tr>
+            `);
+    
+            $('.table-section').hide();
+            $('#all_table').show();
+    
+          } else {
+            $('.table-section tbody tr').each(function() {
+              var dateText = $(this).find('td:first-child').text().trim();
+              var formattedDateText = dateText.replace(/\./g, '-');
+              var rowDate = new Date(formattedDateText);
+              var rowDateString = rowDate.toISOString().split('T')[0];
+    
+              if (rowDate >= startDate && rowDate <= endDate) {
+                $(this).show();
+              } else {
+                $(this).hide();
+              }
+            });
+    
+            $('.table-section').hide();
+            $('#' + selectedOption.toLowerCase() + '_table').show();
+    
+          }
+    
+        });
+    
+        function calculateMaxMoy(tableId, columnName, startDate, endDate) {
+          let max = -Infinity;
+          $(tableId + ' tbody tr').each(function() {
+            var dateText = $(this).find('td:first-child').text().trim();
+            var formattedDateText = dateText.replace(/\./g, '-');
+            var rowDate = new Date(formattedDateText);
+    
+            if (rowDate >= startDate && rowDate <= endDate) {
+              let value = parseFloat($(this).find('td:nth-child(' + columnName + ')').text());
+              if (!isNaN(value)) {
+                max = Math.max(max, value);
+              }
+            }
+          });
+          return max;
+        }
+    
+        function calculateSumByDay(startDate, endDate, columnNumber) {
+          var sums = {};
+    
+          $('#tn1_table tbody tr').each(function() {
+            var dateText = $(this).find('td:first-child').text().trim();
+            var formattedDateText = dateText.replace(/\./g, '-');
+            var rowDate = new Date(formattedDateText);
+    
+            if (rowDate >= startDate && rowDate <= endDate) {
+              var value = parseFloat($(this).find('td:nth-child(' + columnNumber + ')').text().replace(',', '.'));
+              if (!isNaN(value)) {
+                var dateKey = rowDate.toISOString().split('T')[0];
+                sums[dateKey] = (sums[dateKey] || 0) + value;
+              }
+            }
+          });
+    
+          $('#tn2_table tbody tr').each(function() {
+            var dateText = $(this).find('td:first-child').text().trim();
+            var formattedDateText = dateText.replace(/\./g, '-');
+            var rowDate = new Date(formattedDateText);
+    
+            if (rowDate >= startDate && rowDate <= endDate) {
+              var value = parseFloat($(this).find('td:nth-child(' + columnNumber + ')').text().replace(',', '.'));
+              if (!isNaN(value)) {
+                var dateKey = rowDate.toISOString().split('T')[0];
+                sums[dateKey] = (sums[dateKey] || 0) + value;
+              }
+            }
+          });
+    
+          $('#sousse_table tbody tr').each(function() {
+            var dateText = $(this).find('td:first-child').text().trim();
+            var formattedDateText = dateText.replace(/\./g, '-');
+            var rowDate = new Date(formattedDateText);
+    
+            if (rowDate >= startDate && rowDate <= endDate) {
+              var value = parseFloat($(this).find('td:nth-child(' + columnNumber + ')').text().replace(',', '.'));
+              if (!isNaN(value)) {
+                var dateKey = rowDate.toISOString().split('T')[0];
+                sums[dateKey] = (sums[dateKey] || 0) + value;
+              }
+            }
+          });
+    
+          var maxSum = -Infinity;
+          var maxDate = null;
+    
+          Object.keys(sums).forEach(function(date) {
+            if (sums[date] > maxSum) {
+              maxSum = sums[date];
+              maxDate = date;
+            }
+          });
+    
+          return maxSum;
+        }
+    
+        $('#downloadCsvBtnomea').click(function(e) {
+          e.preventDefault();
+          var csvContent = "data:text/csv;charset=utf-8,";
+      
+          // Collect titles from headers
+          var titles = [];
+          $('#all_table thead th').each(function() {
+              var title = $(this).attr('title');
+              if (typeof title !== 'undefined' && title !== '') {
+                  titles.push(title);
+              }
+          });
+      
+          // Collect data rows
+          var rows = [];
+          $('#all_table tbody tr').each(function() {
+              var rowData = [];
+              $(this).find('td').each(function(index) {
+                  rowData.push($(this).text().trim());
+              });
+              rows.push(rowData);
+          });
+      
+          // Combine titles with data rows into CSV rows
+          var csvRows = [];
+          for (var i = 0; i < titles.length; i++) {
+              var title = titles[i];
+              var value = rows[0][i]; // Assume the first row contains the data
+              csvRows.push(title + "," + value); // Format as "title,value"
+          }
+      
+          csvContent += csvRows.join("\r\n");
+      
+          // Download CSV
+          var encodedUri = encodeURI(csvContent);
+          var link = document.createElement("a");
+          link.setAttribute("href", encodedUri);
+          link.setAttribute("download", "table_data.csv");
+          document.body.appendChild(link);
+          link.click();
+      });
+       });
+    </script>
+    
+    
+

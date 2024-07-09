@@ -1,0 +1,250 @@
+{% load static %}
+<section id="intContainer" class="home-section mme-section">
+  <div id="int" class="container">
+    <div id="int_table" class="table-section" style="display: none;">
+      <button id="downloadCsvBtnInt" class="custom-button containerheader">
+        <i class="fas fa-download"></i> &nbsp;Download report
+      </button>     
+      <br><br>
+      <table class="table table-bordered table-striped" border="1">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>PDP Act TN1</th>
+            <th>PDP ACT TN2</th>
+            <th>PDP Act Sousse</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in int_data %}
+          <tr>
+            <td>{{ item.date }}</td>
+            <td>{{ item.bhTN1 }}</td>
+            <td>{{ item.bhTN2 }}</td>
+            <td>{{ item.bhSO }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div id="allaverage_table" class="table-section" style="display: none;">
+      <button id="downloadCsvBtn" class="custom-button containerheader">Download report</button>
+          <br> <br>
+        <table class="table table-bordered table-striped" border="1">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>PDP ACT</th>
+            </tr>
+          </thead>
+          <tbody id="allaverage_body">
+          </tbody>
+        </table>
+      </div>
+  </div>
+  <!--
+  <div style="margin-top: 25px;" class="charts-container">
+    <section class="charts-section" style="margin-left: 25px; margin-right: 10px;">
+    <canvas id="myChartint"></canvas>
+    </section>
+  </div>
+-->
+</section>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</section>
+
+    
+    <script>
+        $(document).ready(function() {
+            $('.table-section').hide();
+            $('#int_table').show();
+            $('#intBtn').click(function(e) {
+              e.preventDefault();
+              $('.table-section').hide(); 
+              $('#int_table').show();
+            });
+
+
+            flatpickr("#dateRangePicker", {
+                mode: "range",
+                dateFormat: "Y-m-d",
+              });
+
+
+              $('#goBtn').click(function(e) {
+                e.preventDefault();
+        
+                const selectedOption = $('.custom-select').val();
+                const dateRange = $('#dateRangePicker').val();
+        
+                if (!dateRange || !dateRange.includes(' to ')) {
+                    alert("Veuillez sélectionner une plage de dates valide.");
+                    return;
+                }
+        
+                const dates = dateRange.split(' to ');
+                const startDate = new Date(dates[0]);
+                const endDate = new Date(dates[1]);
+        
+                if (selectedOption === 'Allaverage') {
+                    var maxValues = calculateMaxValues(startDate, endDate);
+        
+                    $('#allaverage_body').html(`
+                        <tr>
+                            <td>${startDate.toISOString().split('T')[0]} - ${endDate.toISOString().split('T')[0]}</td>
+                            <td>${maxValues.averageOfMax.toFixed(2)}</td>
+                        </tr>
+                    `);
+
+                    $('.table-section').hide()
+                    $('#allaverage_table').show();
+                } else {
+                    $('.table-section tbody tr').each(function() {
+                        const dateText = $(this).find('td:first-child').text().trim();
+                        const rowDate = new Date(dateText);
+        
+                        if (rowDate >= startDate && rowDate <= endDate) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    });
+        
+                    $('.table-section').hide();
+                    $('#' + selectedOption.toLowerCase() + '_table').show();
+                }
+        
+                var maxValues = calculateMaxValues(startDate, endDate);
+                console.log("Maximum de bhTN1:", maxValues.max_bhTN1);
+                console.log("Maximum de bhTN2:", maxValues.max_bhTN2);
+                console.log("Maximum de bhSO:", maxValues.max_bhSO);
+                console.log("Moyenne des maximums:", maxValues.averageOfMax);
+            });
+        
+            function calculateMaxValues(startDate, endDate) {
+                let max_bhTN1 = -Infinity;
+                let max_bhTN2 = -Infinity;
+                let max_bhSO = -Infinity;
+        
+                $('#int_table tbody tr').each(function() {
+                    const dateText = $(this).find('td:first-child').text().trim();
+                    const rowDate = new Date(dateText);
+        
+                    if (rowDate >= startDate && rowDate <= endDate) {
+                        const bhTN1 = parseFloat($(this).find('td:nth-child(2)').text().trim());
+                        const bhTN2 = parseFloat($(this).find('td:nth-child(3)').text().trim());
+                        const bhSO = parseFloat($(this).find('td:nth-child(4)').text().trim());
+        
+                        if (!isNaN(bhTN1) && !isNaN(bhTN2) && !isNaN(bhSO)) {
+                            max_bhTN1 = Math.max(max_bhTN1, bhTN1);
+                            max_bhTN2 = Math.max(max_bhTN2, bhTN2);
+                            max_bhSO = Math.max(max_bhSO, bhSO);
+                        }
+                    }
+                });
+        
+                let averageOfMax = (max_bhTN1 + max_bhTN2 + max_bhSO) / 3;
+        
+                return {
+                    max_bhTN1: max_bhTN1,
+                    max_bhTN2: max_bhTN2,
+                    max_bhSO: max_bhSO,
+                    averageOfMax: averageOfMax
+                };
+            }
+            $('#downloadCsvBtnInt').click(function(e) {
+              e.preventDefault();
+          
+              var csvContent = "data:text/csv;charset=utf-8,";
+          
+              // Collect headers from the table
+              var headers = $('#int_table thead th').map(function() {
+                  return $(this).text().trim();
+              }).get();
+          
+              // Collect rows data from the table body, filtering by date range
+              var rows = [];
+              const startDate = new Date($('#dateRangePicker').val().split(' to ')[0]);
+              const endDate = new Date($('#dateRangePicker').val().split(' to ')[1]);
+          
+              $('#int_table tbody tr').each(function() {
+                  var rowData = $(this).find('td').map(function() {
+                      return $(this).text().trim();
+                  }).get();
+                  var rowDate = new Date(rowData[0]); // Assuming date is the first column, adjust if needed
+          
+                  if (rowDate >= startDate && rowDate <= endDate) {
+                      rows.push(rowData);
+                  }
+              });
+          
+              // Combine headers with data rows into CSV rows
+              var csvRows = [];
+              csvRows.push(headers.join(",")); // Push headers as the first row
+              rows.forEach(function(row) {
+                  csvRows.push(row.join(","));
+              });
+          
+              // Join CSV rows with new line characters
+              csvContent += csvRows.join("\r\n");
+          
+              // Download CSV
+              var encodedUri = encodeURI(csvContent);
+              var link = document.createElement("a");
+              link.setAttribute("href", encodedUri);
+              link.setAttribute("download", "int_table_data.csv");
+              document.body.appendChild(link);
+              link.click();
+          });
+          
+          
+
+            var ctx = document.getElementById('myChartint').getContext('2d');
+            var myChartint = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                datasets: [{
+                    label: '# of Votes',
+                    data: [12, 19, 3, 5, 2, 3],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+            });
+        });
+
+      
+    </script>
+
+  
+    
+      
+    
+      
+    
+      
