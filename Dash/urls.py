@@ -22,10 +22,15 @@ urlpatterns = [
     path('',views.LoginPage,name='login'),
     path('index/',views.HomePage,name='index'),
     path('logout/',views.LogoutPage,name='logout'),  
-    path('lire-fichierso/', views.readfileso, name='readfileso'),
-    path('lire-fichiertn1/', views.readfiletn1, name='readfiletn1'),
-    path('lire-fichiertn2/', views.readfiletn2, name='readfiletn2'),
+    path('lire-fichierso/', views.readfilesoepg, name='readfilesoepg'),
+    path('lire-fichiertn1/', views.readfiletn1epg, name='readfiletn1epg'),
+    path('lire-fichiertn2/', views.readfiletn2epg, name='readfiletn2epg'),
     path('lire-fichierint/', views.readfileint, name='readfileint'),
+    path('mme/', views.mme_view, name='mme'),
+    path('int/', views.int_view, name='int'),
+    path('global/', views.global_view, name='global'),
+    path('epg/', views.epg_view, name='epg'),
+
     
     path('update_table/', views.HomePage, name='update_table'),
     

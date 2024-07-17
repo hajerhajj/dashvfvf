@@ -1,17 +1,24 @@
-# Utilisez l'image officielle de Python comme base
+# my_django_app/Dockerfile
 FROM python:3.10
 
-# Définissez le répertoire de travail dans le conteneur
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Install dependencies
+RUN apt-get update \
+    && apt-get install -y gcc python3-dev libpq-dev \
+    && apt-get clean
+
+# Create and set working directory
+RUN mkdir /app
 WORKDIR /app
 
-COPY . /app
+# Copy project files
+COPY . /app/
 
-# Installer les dépendances
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# Install project dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Exposez le port utilisé par Django
-EXPOSE 8093
-
-# Commande pour lancer l'application Django
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8093"]
+# Run migrations and start the server
+CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8001"]

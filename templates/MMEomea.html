@@ -128,20 +128,20 @@
 
         
     </div>
-    <!--
-        <div style="margin-top: 25px;" class="charts-container">
-          <section class="charts-section" style="margin-left: 25px; margin-right: 10px;">
-          <canvas id="myChart" width="800" height="400"></canvas>
-          </section>
-          
-      </div>
-      -->
+    <div style="margin-top: 25px;" class="charts-container" id="charts-containeromea">
+      <section class="charts-section" style="margin-left: 25px; margin-right: 10px;">
+      <canvas id="myChart" width="800" height="400"></canvas>
+      </section>
+      
+  </div>
     </section>
     
     <script>
       $(document).ready(function() {
     
         $('.table-section').hide();
+        $('.charts-containeromea').hide();
+        $('.charts-section').hide();
         $('#tn1_table').show(); 
         $('#mmeBtn').click(function(e) {
           e.preventDefault();
@@ -191,7 +191,17 @@
                             calculateMaxMoy('#tn2_table', 9, startDate, endDate) + 
                             calculateMaxMoy('#sousse_table', 9, startDate, endDate))/35000;
     
-    
+                            console.log('Start Date:', startDate.toISOString().split('T')[0]);
+                            console.log('End Date:', endDate.toISOString().split('T')[0]);
+                            console.log('attachSr2g3gAvg:', attachSr2g3gAvg.toFixed(2));
+                            console.log('attachSr4gAvg:', attachSr4gAvg.toFixed(2));
+                            console.log('pdpactsrAvg:', pdpactsrAvg.toFixed(2));
+                            console.log('sau2g3gpercent:', sau2g3gpercent.toFixed(2));
+                            console.log('pdpnbrperent:', pdpnbrperent.toFixed(2));
+                            console.log('sau4gAvg:', sau4gAvg.toFixed(2));
+                            console.log('sau2g3gAvg:', sau2g3gAvg);
+                            console.log('pdpnbrAvg:', pdpnbrAvg);
+                            console.log('bearerAvg:', bearerAvg.toFixed(2));
             $('#all_table_body').html(`
               <tr>
                 <td>${startDate.toISOString().split('T')[0]} - ${endDate.toISOString().split('T')[0]}</td>
@@ -209,6 +219,8 @@
     
             $('.table-section').hide();
             $('#all_table').show();
+            $('.charts-containeromea').show();
+            $('.charts-section').show();
     
           } else {
             $('.table-section tbody tr').each(function() {
@@ -232,7 +244,7 @@
         });
     
         function calculateMaxMoy(tableId, columnName, startDate, endDate) {
-          let max = -Infinity;
+          let max = 0;
           $(tableId + ' tbody tr').each(function() {
             var dateText = $(this).find('td:first-child').text().trim();
             var formattedDateText = dateText.replace(/\./g, '-');
@@ -247,7 +259,26 @@
           });
           return max;
         }
-    
+        function calculateMaxMoyByMonth(tableId, columnName, monthIndex) {
+          let max = 0;
+          const year = new Date().getFullYear(); // Utilisez l'année actuelle ou spécifiez-en une
+      
+          $(tableId + ' tbody tr').each(function() {
+              var dateText = $(this).find('td:first-child').text().trim();
+              var formattedDateText = dateText.replace(/\./g, '-');
+              var rowDate = new Date(formattedDateText);
+      
+              // Vérifiez si le mois du rowDate correspond à monthIndex
+              if (rowDate.getMonth() === monthIndex && rowDate.getFullYear() === year) {
+                  let value = parseFloat($(this).find('td:nth-child(' + columnName + ')').text());
+                  if (!isNaN(value)) {
+                      max = Math.max(max, value);
+                  }
+              }
+          });
+          return max;
+      }
+      
         function calculateSumByDay(startDate, endDate, columnNumber) {
           var sums = {};
     
@@ -293,7 +324,7 @@
             }
           });
     
-          var maxSum = -Infinity;
+          var maxSum = 0;
           var maxDate = null;
     
           Object.keys(sums).forEach(function(date) {
@@ -347,8 +378,93 @@
           document.body.appendChild(link);
           link.click();
       });
+     //charts
+      function getMonthName(index) {
+        var months = [
+            "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+            "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+        ];
+        return months[index];
+      }
+  
+      function getLast7Months() {
+        var today = new Date();
+        var months = [];
+        for (var i = 1; i < 7; i++) {
+            var month = new Date(today.getFullYear(), today.getMonth() - i, 1);
+            months.push(month);
+        }
+        return months;
+      }
+  
+      function getLast7MonthsLabels() {
+        return getLast7Months().map(function(month) {
+            return getMonthName(month.getMonth());
+        }).reverse();
+      }
+      
+      function calculateMonthlyAveragesForLast7Months() {
+        const last7Months = getLast7Months();
+        const monthlyAverages = [];
+    
+        last7Months.forEach((month) => {
+            const tn1Max = calculateMaxMoyByMonth('#tn1_table', 2, month.getMonth()) || 0;
+            const tn2Max = calculateMaxMoyByMonth('#tn2_table', 2, month.getMonth()) || 0;
+            const sousseMax = calculateMaxMoyByMonth('#sousse_table', 2, month.getMonth()) || 0;
+    
+            const average = (tn1Max + tn2Max + sousseMax) / 3;
+            monthlyAverages.push(average);
+        });
+    
+        return monthlyAverages.reverse();
+    }
+    
+    // Utilisation
+    const monthlyAverages = calculateMonthlyAveragesForLast7Months();
+    console.log(monthlyAverages.map(avg => avg.toFixed(2)));
+    
+  
+      var ctx = document.getElementById('myChart').getContext('2d');
+      var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: getLast7MonthsLabels(),
+          datasets: [{
+            label: 'Attach SR 2G 3G Average',
+            data: calculateMonthlyAveragesForLast7Months(),
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)',
+              'rgba(255, 99, 132, 0.2)'
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)',
+              'rgba(255, 99, 132, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
        });
+
     </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
     
 

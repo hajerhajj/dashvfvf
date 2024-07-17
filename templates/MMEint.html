@@ -1,5 +1,6 @@
+
 {% load static %}
-<section id="intContainer" class="home-section mme-section">
+<section id="intContainer" class="home-section int-section">
   <div id="int" class="container">
     <div id="int_table" class="table-section" style="display: none;">
       <button id="downloadCsvBtnInt" class="custom-button containerheader">
@@ -101,19 +102,22 @@
                     $('.table-section').hide()
                     $('#allaverage_table').show();
                 } else {
-                    $('.table-section tbody tr').each(function() {
-                        const dateText = $(this).find('td:first-child').text().trim();
-                        const rowDate = new Date(dateText);
-        
-                        if (rowDate >= startDate && rowDate <= endDate) {
-                            $(this).show();
-                        } else {
-                            $(this).hide();
-                        }
-                    });
-        
-                    $('.table-section').hide();
-                    $('#' + selectedOption.toLowerCase() + '_table').show();
+                  $('.table-section tbody tr').each(function() {
+                    var dateText = $(this).find('td:first-child').text().trim();
+                    var formattedDateText = dateText.replace(/\./g, '-');
+                    var rowDate = new Date(formattedDateText);
+                    var rowDateString = rowDate.toISOString().split('T')[0];
+          
+                    if (rowDate >= startDate && rowDate <= endDate) {
+                      $(this).show();
+                    } else {
+                      $(this).hide();
+                    }
+                  });
+          
+                  $('.table-section').hide();
+                  $('#' + selectedOption.toLowerCase() + '_table').show();
+          
                 }
         
                 var maxValues = calculateMaxValues(startDate, endDate);

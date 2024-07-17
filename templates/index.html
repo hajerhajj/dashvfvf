@@ -44,21 +44,6 @@
           <ion-icon name="home-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Dashboard</span>
         </a>
-        <!--
-        <div class="nav__link collapse">
-          <ion-icon name="cloud-download-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name">Download</span>
-          <ion-icon name="chevron-down-outline" class="collapse__link"></ion-icon>
-          
-          <ul class="collapse__menu">
-              <li><a href="#" class="collapse__sublink">OMEA This month</a></li>
-              <li><a href="#" class="collapse__sublink">INT This month</a></li>
-              <li><a href="#" class="collapse__sublink">Global This month</a></li>
-              <li><a href="#" class="collapse__sublink">EPG This month</a></li>
-              <li><a href="#" class="collapse__sublink">APN This month</a></li>
-          </ul>
-      </div>
-      -->
       </div>
 
       <a  href="{% url 'logout' %}" class="nav__link">
@@ -68,15 +53,13 @@
     </nav>
   </div>
   <script src="{% static 'js/script.js' %}"></script>
-  <script src="{% static 'js/script.js' %}"></script>
 
   <section class="home-section">
   <div class="home-content">
       <button class="custom-button show-mme active" id="mmeBtn">MME OMEA</button>
       <button class="custom-button show-int" id="intBtn">MME INT</button>
       <button class="custom-button show-global" id="globalBtn">MME Global</button>
-
-      <button class="custom-button ">EPG</button>
+      <button class="custom-button show-epg" id="epgBtn">EPG</button>
       <button class="custom-button ">APN</button>
 
 
@@ -92,8 +75,12 @@
             <option value="TN1global" class="custom-button">TN1</option>
             <option value="TN2global" class="custom-button">TN2</option>
             <option value="Sousseglobal" class="custom-button">Sousse</option>
-            <option value="Allglobal" class="custom-button">All Global</option>
-          {% else %}
+            <option value="global" class="custom-button">Global</option>
+            {% elif section == "epg" %}
+            <option value="TN1epg" class="custom-button">TN1</option>
+            <option value="TN2vepg" class="custom-button">TN2 VEPG</option>
+            <option value="Sousseepg" class="custom-button">Sousse</option>
+            {% else %}
             <option value="TN1" class="custom-button">TN1</option>
             <option value="TN2" class="custom-button">TN2</option>
             <option value="Sousse" class="custom-button">Sousse</option>
@@ -110,11 +97,10 @@
     </div>
   </section>
 
-  {% include 'MMEint.html' %}
-  {% include 'MMEomea.html' %}
-  {% include 'MMEglobal.html' %}
-
   
+  <div id="content">
+    {% include 'MMEomea.html' %}
+  </div>
 
 
 
@@ -131,10 +117,15 @@
 
       $('#intContainer').hide();
       $('#globalContainer').hide();
-  
+      $('#epgContainer').hide();
+
       $('#mmeBtn').click(function(e) {
         e.preventDefault();
+        $('#content').load('{% url "mme" %}');
         $('#mmeContainer').show();
+        $('#intContainer, #globalContainer, #epgContainer').hide();
+        $('.charts-containerint').hide();
+        $('.charts-section').hide();
         $('.custom-select').html(`
           <option value="TN1" class="custom-button">TN1</option>
           <option value="TN2" class="custom-button">TN2</option>
@@ -142,13 +133,18 @@
           <option value="All" class="custom-button">All</option>
           
         `);
+        
       });
 
       
     
       $('#intBtn').click(function(e) {
         e.preventDefault();
+        $('#content').load('{% url "int" %}');
         $('#intContainer').show();
+        $('#mmeContainer, #globalContainer, #epgContainer').hide();
+        $('.charts-containeromea').hide();
+        $('.charts-section').hide();
         $('.custom-select').html(`<option value="Int" class="custom-button">All</option>
                                   <option value="Allaverage" class="custom-button">All Average</option>
                                   `);
@@ -156,13 +152,28 @@
     
       $('#globalBtn').click(function(e) {
         e.preventDefault();
+        $('#content').load('{% url "global" %}');
         $('#globalContainer').show();
+        $('#intContainer, #epgContainer, #mmeContainer').hide();
         $('.custom-select').html(`
           <option value="TN1global" class="custom-button">TN1</option>
           <option value="TN2global" class="custom-button">TN2</option>
           <option value="Sousseglobal" class="custom-button">Sousse</option>
-          <option value="Allglobal" class="custom-button">All Global</option>
+          <option value="global" class="custom-button">Global</option>
           
+        `);
+      });
+
+      $('#epgBtn').click(function(e) {
+        e.preventDefault();
+        $('#content').load('{% url "epg" %}');
+
+        $('#epgContainer').show();
+        $('#mmeContainer, #intContainer, #globalContainer').hide();
+        $('.custom-select').html(`
+          <option value="TN1epg" class="custom-button">TN1</option>
+          <option value="TN2vepg" class="custom-button">TN2 VEPG</option>
+          <option value="Sousseepg" class="custom-button">Sousse</option>
         `);
       });
       
@@ -185,9 +196,7 @@
 
     $(document).ready(function() {
       $('.custom-button').click(function() {
-          // Supprimer la classe active de tous les boutons
           $('.custom-button').removeClass('active');
-          // Ajouter la classe active uniquement au bouton cliqué
           $(this).addClass('active');
       });
   });

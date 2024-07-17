@@ -484,3 +484,12 @@ a{
 .btn i.fas {
   color: white; 
 }
+.hidden {
+  display: none;
+}
+.content-section {
+  display: none; /* Hide all sections by default */
+}
+.content-section.active {
+  display: block; /* Show the active section */
+}
