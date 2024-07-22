@@ -22,7 +22,8 @@
   <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-brands/css/uicons-brands.css'>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="{% static 'js/script.js' %}"></script>
-  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 
   <!-- Inclure Swiper JS -->
   <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
@@ -56,12 +57,11 @@
 
   <section class="home-section">
   <div class="home-content">
-      <button class="custom-button show-mme active" id="mmeBtn">MME OMEA</button>
-      <button class="custom-button show-int" id="intBtn">MME INT</button>
-      <button class="custom-button show-global" id="globalBtn">MME Global</button>
-      <button class="custom-button show-epg" id="epgBtn">EPG</button>
-      <button class="custom-button ">APN</button>
-
+    <button class="custom-button show-mme active" id="mmeBtn">MME OMEA</button>
+    <button class="custom-button show-int" id="intBtn">MME INT</button>
+    <button class="custom-button show-global" id="globalBtn">MME Global</button>
+    <button class="custom-button show-epg" id="epgBtn">EPG</button>
+    <button class="custom-button">APN</button>
 
       <span class="vertical-line"></span>
       
@@ -119,64 +119,49 @@
       $('#globalContainer').hide();
       $('#epgContainer').hide();
 
-      $('#mmeBtn').click(function(e) {
-        e.preventDefault();
-        $('#content').load('{% url "mme" %}');
-        $('#mmeContainer').show();
-        $('#intContainer, #globalContainer, #epgContainer').hide();
-        $('.charts-containerint').hide();
-        $('.charts-section').hide();
-        $('.custom-select').html(`
-          <option value="TN1" class="custom-button">TN1</option>
-          <option value="TN2" class="custom-button">TN2</option>
-          <option value="Sousse" class="custom-button">Sousse</option>
-          <option value="All" class="custom-button">All</option>
-          
-        `);
-        
-      });
-
-      
+      function handleButtonClick(buttonId, containerToShow, contentUrl, selectOptions) {
+        $(buttonId).click(function(e) {
+          e.preventDefault();
+          $('#content').load(contentUrl);
+          $(containerToShow).show();
+          $('#mmeContainer, #intContainer, #globalContainer, #epgContainer').not(containerToShow).hide();
+          $('.charts-containerint, .charts-containeromea').hide();
+          $('.charts-section').hide();
+          $('.custom-select').html(selectOptions);
     
-      $('#intBtn').click(function(e) {
-        e.preventDefault();
-        $('#content').load('{% url "int" %}');
-        $('#intContainer').show();
-        $('#mmeContainer, #globalContainer, #epgContainer').hide();
-        $('.charts-containeromea').hide();
-        $('.charts-section').hide();
-        $('.custom-select').html(`<option value="Int" class="custom-button">All</option>
-                                  <option value="Allaverage" class="custom-button">All Average</option>
-                                  `);
-      });
-    
-      $('#globalBtn').click(function(e) {
-        e.preventDefault();
-        $('#content').load('{% url "global" %}');
-        $('#globalContainer').show();
-        $('#intContainer, #epgContainer, #mmeContainer').hide();
-        $('.custom-select').html(`
-          <option value="TN1global" class="custom-button">TN1</option>
-          <option value="TN2global" class="custom-button">TN2</option>
-          <option value="Sousseglobal" class="custom-button">Sousse</option>
-          <option value="global" class="custom-button">Global</option>
+          // Remove active class from all buttons
+          $('.custom-button').removeClass('active');
           
-        `);
-      });
-
-      $('#epgBtn').click(function(e) {
-        e.preventDefault();
-        $('#content').load('{% url "epg" %}');
-
-        $('#epgContainer').show();
-        $('#mmeContainer, #intContainer, #globalContainer').hide();
-        $('.custom-select').html(`
-          <option value="TN1epg" class="custom-button">TN1</option>
-          <option value="TN2vepg" class="custom-button">TN2 VEPG</option>
-          <option value="Sousseepg" class="custom-button">Sousse</option>
-        `);
-      });
-      
+          // Add active class to the clicked button
+          $(this).addClass('active');
+        });
+      }
+    
+      // Handle clicks for each button
+      handleButtonClick('#mmeBtn', '#mmeContainer', '{% url "mme" %}', `
+        <option value="TN1" class="custom-button">TN1</option>
+        <option value="TN2" class="custom-button">TN2</option>
+        <option value="Sousse" class="custom-button">Sousse</option>
+        <option value="All" class="custom-button">All</option>
+      `);
+    
+      handleButtonClick('#intBtn', '#intContainer', '{% url "int" %}', `
+        <option value="Int" class="custom-button">All</option>
+        <option value="Allaverage" class="custom-button">All Average</option>
+      `);
+    
+      handleButtonClick('#globalBtn', '#globalContainer', '{% url "global" %}', `
+        <option value="TN1global" class="custom-button">TN1</option>
+        <option value="TN2global" class="custom-button">TN2</option>
+        <option value="Sousseglobal" class="custom-button">Sousse</option>
+        <option value="global" class="custom-button">Global</option>
+      `);
+    
+      handleButtonClick('#epgBtn', '#epgContainer', '{% url "epg" %}', `
+        <option value="TN1epg" class="custom-button">TN1</option>
+        <option value="TN2vepg" class="custom-button">TN2 VEPG</option>
+        <option value="Sousseepg" class="custom-button">Sousse</option>
+      `);
     });    
     const showMenu = (toggleId, navbarId, bodyId)=>{
       const toggle = document.getElementById(toggleId),
@@ -194,16 +179,14 @@
     showMenu('nav-toggle','navbar','body-pd')
     
 
-    $(document).ready(function() {
-      $('.custom-button').click(function() {
-          $('.custom-button').removeClass('active');
-          $(this).addClass('active');
-      });
-  });
+    
+
+  
   
   </script>
-  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
   <script src="{% static 'js/script.js' %}"></script>
 </body>
 

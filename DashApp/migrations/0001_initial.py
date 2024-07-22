@@ -12,16 +12,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Int',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.CharField(default='', max_length=150, unique=True)),
-                ('bhTN1', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('bhTN2', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('bhSO', models.DecimalField(decimal_places=2, max_digits=10)),
-            ],
-        ),
-        migrations.CreateModel(
             name='OrAdmin',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),

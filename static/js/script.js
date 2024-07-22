@@ -1,4 +1,6 @@
 
+
+
 /*===== LINK ACTIVE  =====*/ 
 const linkColor = document.querySelectorAll('.nav__link')
 function colorLink(){
@@ -63,14 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Flatpickr
   flatpickr("#dateRangePicker", {
-    mode: "range",
+    mode: "multiple",
     dateFormat: "Y-m-d"
-  });
-
-  // Custom Button Active
-  $('.custom-button').click(function() {
-    $('.custom-button').removeClass('active');
-    $(this).addClass('active');
   });
 
   // Go Button Click

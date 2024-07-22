@@ -300,18 +300,17 @@
     }
     
     .table-section table {
-      margin: auto; /* Centrer horizontalement */
-      width: 100%; /* Pour s'assurer que le tableau ne dépasse pas la largeur de table-section */
+      width: 100%;
+      border-collapse: collapse;
     }
     
     .table-section table th,
     .table-section table td {
       text-align: center;
       vertical-align: middle;
-      width: 10%; /* Ajuster la largeur des colonnes si nécessaire */
-      height: 50px;
+      width: 100px; /* Largeur fixe pour toutes les cellules */
+      padding: 10px;
     }
-    
     
 
     /* sidebar */
@@ -484,12 +483,51 @@ a{
 .btn i.fas {
   color: white; 
 }
-.hidden {
-  display: none;
+
+
+.swiper-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.13); /* Couleur de fond semi-transparente */
+  border-radius: 10px; /* Coins arrondis */
+  backdrop-filter: blur(10px); /* Flou de l'arrière-plan pour un effet de transparence */
+  border: 2px solid rgba(255, 255, 255, 0.1); /* Bordure légère */
+  box-shadow: 0 0 40px rgba(8, 7, 16, 0.6); /* Ombre pour un effet de profondeur */
+  overflow: hidden;
+  margin-left: 20px;
+  margin-top: 10px;
+  position: relative;
 }
-.content-section {
-  display: none; /* Hide all sections by default */
+
+.swiper-wraper{
+  margin-right: 20px;
+  
 }
-.content-section.active {
-  display: block; /* Show the active section */
+.swiper-slide {
+  display: flex;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: #000; 
+  position: absolute;
+  top: 50%; 
+  transform: translateY(-50%); 
+  width: 10px;
+  height: 10px; 
+  border-radius: 50%; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+}
+
+.swiper-button-next {
+  right: 10px;
+}
+
+.swiper-button-prev {
+  left: 10px; 
 }

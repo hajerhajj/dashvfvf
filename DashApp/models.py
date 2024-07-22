@@ -57,6 +57,15 @@ class Int(models.Model):
     bhTN1 = models.DecimalField(max_digits=10, decimal_places=2)
     bhTN2 = models.DecimalField(max_digits=10, decimal_places=2)
     bhSO = models.DecimalField(max_digits=10, decimal_places=2)
+    bhGlobal = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.bhTN1 is not None and self.bhTN2 is not None and self.bhSO is not None:
+            self.bhGlobal = (self.bhTN1 + self.bhTN2 + self.bhSO) / 3
+        else:
+            self.bhGlobal = None
+        
+        super().save(*args, **kwargs)
 
 
 class Tn1EPG(models.Model):
